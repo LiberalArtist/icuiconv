@@ -7,17 +7,34 @@
 #include "unicode/uloc.h"
 #include "unicode/unistr.h"
 
+typedef enum {
+  ICUICONV_OK = 0;
+  /* https://docs.microsoft.com/en-us/cpp/c-runtime-library/errno-constants?view=msvc-170 */
+} icuiconv_error_t;
+
+void icuiconv_set_errno(icuiconv_error_t error) {
+  abort(); /* TODO */
+}
+
+int *_errno() {
+  abort(); /* TODO: thread-local storage */
+}
+
 #define ICUICONV_BUF_SIZE 4096
 
 typedef struct icuiconv_state {
-  UConverter *targetCnv;
   UConverter *sourceCnv;
+  UConverter *targetCnv;
   UChar *pivotSource; /* pointer info buf */
   UChar *pivotTarget; /* pointer info buf */
   UChar buf[ICUICONV_BUF_SIZE];
 } icuiconv_state;
 
 typedef icuiconv_state *iconv_t;
+
+const char *icuiconv_encoding_to_icu(const char *encoding) {
+  return encoding;
+}
 
 iconv_t iconv_open(const char *tocode, const char *fromcode) {
   UErrorCode err = U_ZERO_ERROR;
