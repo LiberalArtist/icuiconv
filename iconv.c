@@ -1,11 +1,14 @@
-#include <errno.h>
-
 #include "unicode/utypes.h"   /* Basic ICU data types */
 #include "unicode/ucnv.h"     /* C   Converter API    */
 #include "unicode/ustring.h"  /* some more string fcns*/
 #include "unicode/uchar.h"    /* char names           */
 #include "unicode/uloc.h"
 #include "unicode/unistr.h"
+
+#ifndef ICUICONV_SET_ERRNO
+# include <errno.h>
+# define ICUICONV_SET_ERRNO(Expr) { errno = Expr; }
+#endif
 
 #define ICUICONV_BUF_SIZE 4096
 
@@ -19,9 +22,7 @@ typedef struct icuiconv_state {
 
 typedef icuiconv_state *iconv_t;
 
-const char *icuiconv_encoding_to_icu(const char *encoding) {
-  return encoding;
-}
+
 
 iconv_t iconv_open(const char *tocode, const char *fromcode) {
   UErrorCode errorCode = U_ZERO_ERROR;
@@ -32,14 +33,14 @@ iconv_t iconv_open(const char *tocode, const char *fromcode) {
   } else {
     cd->pivotSource = &cd->buf;
     cd->pivotTarget = &cd->buf;
-    cd->sourceCnv = ucnv_open(icuiconv_encoding_to_icu(fromcode), &errorCode);
+    cd->sourceCnv = ucnv_open(ICUICONV_ENCODING_TO_ICU(fromcode), &errorCode);
     if (U_FAILURE(errorCode)) {
       free(cd);
       errno = EINVAL; /* is this the right error ? */
       return (iconv_t)(-1);
     } else {
       errorCode = U_ZERO_ERROR;
-      cd->targetCnv = ucnv_open(icuiconv_encoding_to_icu(tocode), &errorCode);
+      cd->targetCnv = ucnv_open(ICUICONV_ENCODING_TO_ICU(tocode), &errorCode);
       if (U_FAILURE(errorCode)) {
         ucnv_close(cd->sourceCnv);
         free(cd);
