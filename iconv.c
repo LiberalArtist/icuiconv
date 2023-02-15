@@ -1,4 +1,4 @@
-#include <stdbool.h>
+#include <errno.h>
 
 #include "unicode/utypes.h"   /* Basic ICU data types */
 #include "unicode/ucnv.h"     /* C   Converter API    */
@@ -6,19 +6,6 @@
 #include "unicode/uchar.h"    /* char names           */
 #include "unicode/uloc.h"
 #include "unicode/unistr.h"
-
-typedef enum {
-  ICUICONV_OK = 0;
-  /* https://docs.microsoft.com/en-us/cpp/c-runtime-library/errno-constants?view=msvc-170 */
-} icuiconv_error_t;
-
-void icuiconv_set_errno(icuiconv_error_t error) {
-  abort(); /* TODO */
-}
-
-int *_errno() {
-  abort(); /* TODO: thread-local storage */
-}
 
 #define ICUICONV_BUF_SIZE 4096
 
@@ -37,26 +24,26 @@ const char *icuiconv_encoding_to_icu(const char *encoding) {
 }
 
 iconv_t iconv_open(const char *tocode, const char *fromcode) {
-  UErrorCode err = U_ZERO_ERROR;
+  UErrorCode errorCode = U_ZERO_ERROR;
   icuiconv_state *cd = (icuiconv_state *)calloc(1, sizeof(icuiconv_state));
   if (NULL == cd) {
-    abort(); /* FIXME errno */
+    errno = ENOMEM;
     return (iconv_t)(-1);
   } else {
     cd->pivotSource = &cd->buf;
-    cd->pivotTarget = abort(); /*FIXME*/
-    cd->sourceCnv = ucnv_open(fromcode, &err); /* TODO rewrite name */
-    if (U_FAILURE(err)) {
+    cd->pivotTarget = &cd->buf;
+    cd->sourceCnv = ucnv_open(icuiconv_encoding_to_icu(fromcode), &errorCode);
+    if (U_FAILURE(errorCode)) {
       free(cd);
-      abort(); /* FIXME errno */
+      errno = EINVAL; /* is this the right error ? */
       return (iconv_t)(-1);
     } else {
       errorCode = U_ZERO_ERROR;
-      cd->targetCnv = ucnv_open(tocode, &err); /* TODO rewrite name */
-      if (U_FAILURE(err)) {
+      cd->targetCnv = ucnv_open(icuiconv_encoding_to_icu(tocode), &errorCode);
+      if (U_FAILURE(errorCode)) {
         ucnv_close(cd->sourceCnv);
         free(cd);
-        abort(); /* FIXME errno */
+        errno = EINVAL; /* is this the right error ? */
         return (iconv_t)(-1);
       } else {
         return cd;
@@ -82,9 +69,8 @@ size_t iconv(iconv_t cd,
       /* set cd's conversion state to the initial state */
       ucnv_reset(cd->from);
       ucnv_reset(cd->to);
-      /* TODO cd->pivotSource */
-      /* TODO cd->pivotTarget */
-      /* TODO cd->buf */
+      cd->pivotSource = &cd->buf;
+      cd->pivotTarget = &cd->buf;
       abort(); /* FIXME: what to return */
     } else {
       /* outbuf is not NULL and *outbuf is not NULL */
@@ -100,10 +86,26 @@ size_t iconv(iconv_t cd,
     };
   } else {
     /* Main case: inbuf is not NULL and *inbuf is not NULL */
-    UErrorCode err = U_ZERO_ERROR;
+    /* https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ucnv_8h.html#a8c2852929b99ca983ccd1f33a203cc2a */
+    UBool reset = false;
     UBool flush = false;
-
-    ucnv_convertEx(); /* https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ucnv_8h.html#a8c2852929b99ca983ccd1f33a203cc2a */
+    UErrorCode errorCode = U_ZERO_ERROR;
+    const char *source = *inbuf;
+    char *target = *outbuf;
+    
+    ucnv_convertEx(cd->targetCnv,
+                   cd->sourceCnv,
+                   &target,
+                   target + *outbytesleft,
+                   &source,
+                   source + *inbytesleft,
+                   cd->buf,
+                   &cd->pivotSource,
+                   &cd->pivotTarget,
+                   cd->buf + ICUICONV_BUF_SIZE,
+                   reset,
+                   flush,
+                   &errorCode);
       
     abort(); /* TODO */
   };
