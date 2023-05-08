@@ -9,8 +9,11 @@
 # include <errno.h>
 # define ICUICONV_SET_ERRNO(Expr) { errno = Expr; }
 #endif
+#ifndef ICUICONV_ENCODING_TO_ICU
+# define ICUICONV_ENCODING_TO_ICU(Expr) (Expr)
+#endif
 
-#define ICUICONV_BUF_SIZE 4096
+#define ICUICONV_BUF_SIZE 4096 /* is this a good size? */
 
 typedef struct icuiconv_state {
   UConverter *sourceCnv;
@@ -28,7 +31,7 @@ iconv_t iconv_open(const char *tocode, const char *fromcode) {
   UErrorCode errorCode = U_ZERO_ERROR;
   icuiconv_state *cd = (icuiconv_state *)calloc(1, sizeof(icuiconv_state));
   if (NULL == cd) {
-    errno = ENOMEM;
+    ICUICONV_SET_ERRNO(ENOMEM);
     return (iconv_t)(-1);
   } else {
     cd->pivotSource = &cd->buf;
@@ -36,7 +39,7 @@ iconv_t iconv_open(const char *tocode, const char *fromcode) {
     cd->sourceCnv = ucnv_open(ICUICONV_ENCODING_TO_ICU(fromcode), &errorCode);
     if (U_FAILURE(errorCode)) {
       free(cd);
-      errno = EINVAL; /* is this the right error ? */
+      ICUICONV_SET_ERRNO(EINVAL); /* is this the right error ? */
       return (iconv_t)(-1);
     } else {
       errorCode = U_ZERO_ERROR;
@@ -44,7 +47,7 @@ iconv_t iconv_open(const char *tocode, const char *fromcode) {
       if (U_FAILURE(errorCode)) {
         ucnv_close(cd->sourceCnv);
         free(cd);
-        errno = EINVAL; /* is this the right error ? */
+        ICUICONV_SET_ERRNO(EINVAL); /* is this the right error ? */
         return (iconv_t)(-1);
       } else {
         return cd;
