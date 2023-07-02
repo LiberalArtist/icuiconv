@@ -1,4 +1,6 @@
 #lang zuo
+;; SPDX-License-Identifier: Apache-2.0
+;; SPDX-FileCopyrightText:  2023 Philip McGrath <philip@philipmcgrath.com>
 
 (provide-targets targets-at)
 

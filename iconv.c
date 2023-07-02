@@ -1,3 +1,11 @@
+/* iconv.c
+ *
+ * ICU Iconv
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText:  2023 Philip McGrath <philip@philipmcgrath.com>
+ *
+ */
 #include <stdlib.h>
 #include "unicode/utypes.h"   /* Basic ICU data types  */
 #include "unicode/ucnv.h"     /* C   Converter API     */

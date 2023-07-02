@@ -1,0 +1,23 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ICU Iconv
+Upstream-Contact: Philip McGrath <philip@philipmcgrath.com>
+Source: https://github.com/LiberalArtist/icuiconv
+
+Files: README.md
+Copyright: Philip McGrath <philip@philipmcgrath.com>
+License: CC0-1.0
+
+Files: build-aux/m4/ax_check_icu.m4
+Copyright: 2008 Akos Maroy <darkeye@tyrell.hu>
+License: FSFAP
+Comment: From the GNU Autoconf Archive.
+
+Files:
+ encodings/encodings.ss
+ encodings/iconv--list--enable-extra-encodings.txt
+ encodings/iconv--list.txt
+ encodings/missing-encodings.ss
+ encodings/uconv--list.txt
+Copyright: Machine-generated data files
+License: CC0-1.0
+Comment: These files are likely not subject to copyright.

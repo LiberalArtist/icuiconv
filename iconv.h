@@ -4,6 +4,12 @@
  * libc, version 1.2.3. It was very slightly adapted by Philip McGrath to suit
  * a standalone iconv implementation.
  *
+ * To the extent that copyright subsists in any of the modifications to this
+ * file, permission is hereby granted to use the modifications under the same
+ * terms as the musl libc v1.2.3 original, i.e.:
+ * SPDX-License-Identifier: MIT-0
+ * SPDX-FileCopyrightText:  2023 Philip McGrath <philip@philipmcgrath.com>
+ *
  * The following details are excerpted from the COPYRIGHT file in the musl
  * libc v1.2.3 distribution:
  *
@@ -158,10 +164,6 @@
  * In the musl libc v1.2.3 distribution, "include/iconv.h" was one of the
  * aforementioned "files which have no copyright comments", in addition to
  * being a public header file.
- *
- * To the extent that copyright subsists in any of the modifications to this
- * file, permission is hereby granted to use the modifications under the same
- * terms as the musl libc v1.2.3 original.
  *
  */
 

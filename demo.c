@@ -1,4 +1,11 @@
-#include "iconv.h"
+/* demo.c
+ *
+ * ICU Iconv
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * SPDX-FileCopyrightText:  2023 Philip McGrath <philip@philipmcgrath.com>
+ *
+ */#include "iconv.h"
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>

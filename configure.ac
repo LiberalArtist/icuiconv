@@ -1,15 +1,16 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([ICU Iconv],[0.1],[philip@philipmcgrath.com])
+AC_INIT([ICU Iconv],
+        [0.1],
+        [philip@philipmcgrath.com],
+        [icuiconv],
+        [https://github.com/LiberalArtist/icuiconv])
 dnl SPDX-License-Identifier: CC0-1.0
-dnl SPDX-FileCopyrightText:  Philip McGrath
+dnl SPDX-FileCopyrightText:  Philip McGrath <philip@philipmcgrath.com>
 dnl --------------------------------------------------------------------------
 
 dnl Minimum Autoconf version required.
 dnl FIXME: do we actually need 2.71?
 AC_PREREQ([2.63]) dnf ? might need 2.71
-
-dnl TODO: consider git-version-gen from Gnulib
-dnl TODO: how to use AC_COPYRIGHT([my stuff here])
 
 dnl Where to find configure input.
 AC_CONFIG_SRCDIR([iconv.c])
@@ -18,6 +19,7 @@ AC_CONFIG_MACRO_DIR([build-aux/m4])
 
 dnl Checks for programs.
 dnl We need a C compiler.
+dnl TODO: check for Zuo.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
