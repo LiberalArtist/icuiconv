@@ -2,3 +2,5 @@
 /config.log
 /build-aux/install-sh
 /autom4te.cache/
+_zuo.db
+_zuo_tc.db
