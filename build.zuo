@@ -1,0 +1,39 @@
+#lang zuo
+
+(provide-targets targets-at)
+
+(define (targets-at at-dir vars)
+  (define config (config-file->hash (at-dir "Makefile") vars))
+  (define icu-config
+    (foldl (lambda (ks hsh)
+             (config-merge hsh (car ks) (hash-ref hsh (cdr ks) "")))
+           config
+           '([CFLAGS . ICU_CFLAGS]
+             [CPPFLAGS . ICU_CPPFLAGS]
+             [LIBS . ICU_LIBS])))
+
+  (define iconv.c (at-source "iconv.c"))
+  (define icuiconv.so (at-dir "icuiconv.so"))
+
+  (define demo.c (at-source "demo.c"))
+  (define demo.exe (at-dir (.exe "demo")))
+  
+  (make-targets
+   `([:target check (,demo.exe)
+              ,(lambda (token)
+                 (alert "running" demo.exe)
+                 (define p (process demo.exe))
+                 (thread-process-wait (hash-ref p 'process))
+                 (unless (= 0 (process-status (hash-ref p 'process)))
+                   (error "demo failed")))]
+     [:target ,demo.exe (,demo.c ,icuiconv.so)
+              ,(lambda (dest token)
+                 (c-compile dest
+                            (list demo.c icuiconv.so)
+                            icu-config))]
+     [:target ,icuiconv.so (,iconv.c)
+              ,(lambda (dest token)
+                 (c-compile dest iconv.c
+                            (config-merge icu-config
+                                          'CFLAGS
+                                          "-fPIC -shared")))])))

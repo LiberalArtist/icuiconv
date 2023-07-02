@@ -1,6 +1,13 @@
 /configure
 /config.log
+/config.status
 /build-aux/install-sh
 /autom4te.cache/
+/aclocal.m4
+/Makefile
+/main.zuo
 _zuo.db
 _zuo_tc.db
+icuiconv.so
+demo
+*~

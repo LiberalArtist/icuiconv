@@ -1,0 +1,3 @@
+#lang zuo
+;; @configure_input@
+(bounce-to-targets "Makefile" 'srcdir "build.zuo")

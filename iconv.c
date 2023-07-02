@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "unicode/utypes.h"   /* Basic ICU data types  */
 #include "unicode/ucnv.h"     /* C   Converter API     */
 #include "unicode/ustring.h"  /* some more string fcns */
@@ -35,8 +36,8 @@ iconv_t iconv_open(const char *tocode, const char *fromcode) {
     ICUICONV_SET_ERRNO(ENOMEM);
     return (iconv_t)(-1);
   } else {
-    cd->pivotSource = &cd->buf;
-    cd->pivotTarget = &cd->buf;
+    cd->pivotSource = &cd->buf[0];
+    cd->pivotTarget = &cd->buf[0];
     cd->sourceCnv = ucnv_open(ICUICONV_ENCODING_TO_ICU(fromcode), &errorCode);
     if (U_FAILURE(errorCode)) {
       free(cd);
@@ -73,10 +74,10 @@ size_t iconv(iconv_t cd,
   if ((NULL == inbuf) || (NULL == *inbuf)) {
     if ((NULL == outbuf) || (NULL == *outbuf)) {
       /* Set cd's conversion state to the initial state. */
-      ucnv_reset(cd->from);
-      ucnv_reset(cd->to);
-      cd->pivotSource = &cd->buf;
-      cd->pivotTarget = &cd->buf;
+      ucnv_reset(cd->sourceCnv);
+      ucnv_reset(cd->targetCnv);
+      cd->pivotSource = &cd->buf[0];
+      cd->pivotTarget = &cd->buf[0];
       return 0;
     } else {
       /* outbuf is not NULL and *outbuf is not NULL */
@@ -111,20 +112,20 @@ size_t iconv(iconv_t cd,
         ICUICONV_SET_ERRNO(U_BUFFER_OVERFLOW_ERROR == errorCode
                            ? E2BIG
                            : EBADMSG); /* ? */
-        return (iconv_t)(-1);
+        return -1;
       };
     };
   } else {
     /* Main case: inbuf is not NULL and *inbuf is not NULL */
     /* https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/ucnv_8h.html#a8c2852929b99ca983ccd1f33a203cc2a */
-    const char *source = *inbuf;
+    char *source = *inbuf;
     char *target = *outbuf;
     size_t ret = 0;
     ucnv_convertEx(cd->targetCnv,
                    cd->sourceCnv,
                    &target,
                    target + *outbytesleft,
-                   &source,
+                   (const char **) &source, /* TODO: double-check cast */
                    source + *inbytesleft,
                    cd->buf,
                    &cd->pivotSource,
@@ -147,7 +148,7 @@ size_t iconv(iconv_t cd,
         /* TODO: distinguish EILSEQ */
         ICUICONV_SET_ERRNO(EINVAL);
       };
-      return (iconv_t)(-1);
+      return -1;
     }
   };
 }

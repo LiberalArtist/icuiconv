@@ -14,9 +14,16 @@ dnl TODO: how to use AC_COPYRIGHT([my stuff here])
 dnl Where to find configure input.
 AC_CONFIG_SRCDIR([iconv.c])
 AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([build-aux/m4])
 
 dnl Checks for programs.
 dnl We need a C compiler.
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
+AC_PROG_MAKE_SET()
+
+AX_CHECK_ICU([2.6], [], [])
+
+AC_CONFIG_FILES([Makefile main.zuo])
+AC_OUTPUT()

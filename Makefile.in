@@ -1,0 +1,15 @@
+# @PACKAGE_NAME@ @configure_input@
+
+srcdir = @srcdir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+
+ICU_CFLAGS = @ICU_CFLAGS@
+ICU_CPPFLAGS = @ICU_CPPFLAGS@
+ICU_LIBS = @ICU_LIBS@
+
+@SET_MAKE@
